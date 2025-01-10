@@ -1,9 +1,8 @@
 import { Router } from "express";
+import userRouter from "./userRoutes";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("PontoApp API is running");
-});
+router.use("/users", userRouter);
 
 export default router;

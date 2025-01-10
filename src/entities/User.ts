@@ -4,11 +4,14 @@ import { Ponto } from "./Ponto";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-    id!: number;
+  id!: number;
 
   @Column()
-    name!: string;
+  name!: string;
+
+  @Column({ unique: true })
+  username!: string;
 
   @OneToMany(() => Ponto, (ponto) => ponto.user)
-    pontos!: Ponto[];
+  pontos!: Ponto[];
 }
