@@ -74,6 +74,27 @@ userRouter.get("/", async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ error: "Erro ao buscar o usuário" });
     }
   });
+
+  userRouter.get("/username/:username", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username } = req.params;
+  
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { username },
+      });
+  
+      if (!user) {
+        res.status(404).json({ error: "Usuário não encontrado" });
+        return;
+      }
+  
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro ao buscar o usuário" });
+    }
+  });
+  
   
 
 export default userRouter;
