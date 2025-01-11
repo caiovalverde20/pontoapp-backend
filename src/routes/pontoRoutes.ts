@@ -165,7 +165,6 @@ workRouter.get("/user/:username/week", async (req: Request, res: Response): Prom
       return;
     }
 
-    // Calcula a semana (segunda a sexta) atual
     const now = new Date();
     const dayOfWeek = now.getDay();
     const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
@@ -173,19 +172,19 @@ workRouter.get("/user/:username/week", async (req: Request, res: Response): Prom
     monday.setDate(now.getDate() - diffToMonday);
     monday.setHours(0, 0, 0, 0);
 
-    const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4);
-    friday.setHours(23, 59, 59, 999);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
 
     const pontos = await AppDataSource.getRepository(Ponto).find({
       where: [
         { user: { id: user.id }, startTime: MoreThan(monday) },
-        { user: { id: user.id }, startTime: LessThan(friday) },
+        { user: { id: user.id }, startTime: LessThan(sunday) },
       ],
       order: { startTime: "ASC" },
     });
 
-    const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+    const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
     const weekData = daysOfWeek.map((day, index) => {
       const dayStart = new Date(monday);
       dayStart.setDate(monday.getDate() + index);
@@ -209,8 +208,7 @@ workRouter.get("/user/:username/week", async (req: Request, res: Response): Prom
     const totalHoursWeek = pontos.reduce((total, ponto) => {
       if (ponto.endTime) {
         const diff =
-          new Date(ponto.endTime).getTime() -
-          new Date(ponto.startTime).getTime();
+          new Date(ponto.endTime).getTime() - new Date(ponto.startTime).getTime();
         return total + diff / (1000 * 60 * 60);
       }
       return total;
@@ -225,6 +223,7 @@ workRouter.get("/user/:username/week", async (req: Request, res: Response): Prom
     res.status(500).json({ error: "Erro ao buscar pontos da semana" });
   }
 });
+
 
 
 export default workRouter;
