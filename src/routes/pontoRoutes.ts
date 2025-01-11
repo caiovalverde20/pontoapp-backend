@@ -155,4 +155,76 @@ workRouter.get("/user/:username/date", async (req: Request, res: Response): Prom
   }
 );
 
+workRouter.get("/user/:username/week", async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username } = req.params;
+
+    const user = await getUserByUsername(username);
+    if (!user) {
+      res.status(404).json({ error: "Usuário não encontrado" });
+      return;
+    }
+
+    // Calcula a semana (segunda a sexta) atual
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+    friday.setHours(23, 59, 59, 999);
+
+    const pontos = await AppDataSource.getRepository(Ponto).find({
+      where: [
+        { user: { id: user.id }, startTime: MoreThan(monday) },
+        { user: { id: user.id }, startTime: LessThan(friday) },
+      ],
+      order: { startTime: "ASC" },
+    });
+
+    const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+    const weekData = daysOfWeek.map((day, index) => {
+      const dayStart = new Date(monday);
+      dayStart.setDate(monday.getDate() + index);
+
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const ponto = pontos.find(
+        (p) =>
+          new Date(p.startTime).toDateString() === dayStart.toDateString()
+      );
+
+      return {
+        day,
+        startTime: ponto?.startTime || null,
+        endTime: ponto?.endTime || null,
+      };
+    });
+
+    // total de horas na semana
+    const totalHoursWeek = pontos.reduce((total, ponto) => {
+      if (ponto.endTime) {
+        const diff =
+          new Date(ponto.endTime).getTime() -
+          new Date(ponto.startTime).getTime();
+        return total + diff / (1000 * 60 * 60);
+      }
+      return total;
+    }, 0);
+
+    res.status(200).json({
+      weekData,
+      totalHoursWeek: totalHoursWeek.toFixed(2),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao buscar pontos da semana" });
+  }
+});
+
+
 export default workRouter;
