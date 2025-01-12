@@ -32,7 +32,10 @@ export const AppDataSource = new DataSource(
       }
 );
 
-export const initializeDatabase = async (retries = 5, delay = 3000): Promise<void> => {
+export const initializeDatabase = async (
+  retries = 5,
+  delay = 3000
+): Promise<void> => {
   for (let i = 0; i < retries; i++) {
     try {
       await AppDataSource.initialize();
@@ -47,7 +50,6 @@ export const initializeDatabase = async (retries = 5, delay = 3000): Promise<voi
   }
   throw new Error('Unable to connect to the database after multiple attempts.');
 };
-
 
 if (!isTestEnv) {
   AppDataSource.initialize()

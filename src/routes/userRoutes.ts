@@ -15,12 +15,10 @@ userRouter.post('/', async (req: Request, res: Response): Promise<void> => {
 
     const nameParts = fullName.trim().split(' ');
     if (nameParts.length < 2) {
-      res
-        .status(400)
-        .json({
-          error:
-            'O nome completo deve incluir pelo menos um primeiro e um último nome',
-        });
+      res.status(400).json({
+        error:
+          'O nome completo deve incluir pelo menos um primeiro e um último nome',
+      });
       return;
     }
 
@@ -86,29 +84,32 @@ userRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-userRouter.get('/username/:username', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { username } = req.params;
+userRouter.get(
+  '/username/:username',
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { username } = req.params;
 
-    if (!username) {
-      res.status(404).json({ error: 'Usuário não encontrado' });
-      return;
+      if (!username) {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+        return;
+      }
+
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { username },
+      });
+
+      if (!user) {
+        res.status(404).json({ error: 'Usuário não encontrado' });
+        return;
+      }
+
+      res.status(200).json(user);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Erro ao buscar o usuário' });
     }
-
-    const user = await AppDataSource.getRepository(User).findOne({
-      where: { username },
-    });
-
-    if (!user) {
-      res.status(404).json({ error: 'Usuário não encontrado' });
-      return;
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar o usuário' });
   }
-});
+);
 
 export default userRouter;

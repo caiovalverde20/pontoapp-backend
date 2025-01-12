@@ -26,7 +26,9 @@ afterAll(async () => {
 describe('User API', () => {
   describe('POST /api/users', () => {
     it('Deve criar um usuário com sucesso', async () => {
-      const response = await request(app).post('/api/users').send({ fullName: 'João Silva' });
+      const response = await request(app)
+        .post('/api/users')
+        .send({ fullName: 'João Silva' });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
@@ -37,11 +39,16 @@ describe('User API', () => {
       const response = await request(app).post('/api/users').send({});
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('error', 'O nome completo é obrigatório');
+      expect(response.body).toHaveProperty(
+        'error',
+        'O nome completo é obrigatório'
+      );
     });
 
     it('Deve retornar erro ao criar um usuário com fullName inválido', async () => {
-      const response = await request(app).post('/api/users').send({ fullName: 'João' });
+      const response = await request(app)
+        .post('/api/users')
+        .send({ fullName: 'João' });
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
@@ -52,7 +59,9 @@ describe('User API', () => {
 
     it('Deve criar múltiplos usuários e garantir usernames únicos', async () => {
       await request(app).post('/api/users').send({ fullName: 'João Silva' });
-      const response = await request(app).post('/api/users').send({ fullName: 'João Silva' });
+      const response = await request(app)
+        .post('/api/users')
+        .send({ fullName: 'João Silva' });
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('username', 'joão.silva02');
@@ -62,7 +71,9 @@ describe('User API', () => {
   describe('GET /api/users', () => {
     it('Deve retornar todos os usuários', async () => {
       await request(app).post('/api/users').send({ fullName: 'João Silva' });
-      await request(app).post('/api/users').send({ fullName: 'Maria Oliveira' });
+      await request(app)
+        .post('/api/users')
+        .send({ fullName: 'Maria Oliveira' });
 
       const response = await request(app).get('/api/users');
 
@@ -73,7 +84,9 @@ describe('User API', () => {
 
   describe('GET /api/users/:id', () => {
     it('Deve buscar um usuário existente pelo ID', async () => {
-      const { body } = await request(app).post('/api/users').send({ fullName: 'João Silva' });
+      const { body } = await request(app)
+        .post('/api/users')
+        .send({ fullName: 'João Silva' });
       const response = await request(app).get(`/api/users/${body.id}`);
 
       expect(response.status).toBe(200);
@@ -97,15 +110,21 @@ describe('User API', () => {
 
   describe('GET /api/users/username/:username', () => {
     it('Deve buscar um usuário existente pelo username', async () => {
-      const { body } = await request(app).post('/api/users').send({ fullName: 'João Silva' });
-      const response = await request(app).get(`/api/users/username/${body.username}`);
+      const { body } = await request(app)
+        .post('/api/users')
+        .send({ fullName: 'João Silva' });
+      const response = await request(app).get(
+        `/api/users/username/${body.username}`
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('username', body.username);
     });
 
     it('Deve retornar erro ao buscar um username inexistente', async () => {
-      const response = await request(app).get('/api/users/username/joão.inexistente');
+      const response = await request(app).get(
+        '/api/users/username/joão.inexistente'
+      );
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty('error', 'Usuário não encontrado');
@@ -115,7 +134,6 @@ describe('User API', () => {
       const response = await request(app).get('/api/users/username/');
 
       expect(response.status).toBe(404);
-      
     });
   });
 });
