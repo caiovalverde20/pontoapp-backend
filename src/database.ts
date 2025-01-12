@@ -23,6 +23,9 @@ export const AppDataSource = new DataSource(
         password: process.env.POSTGRES_PASSWORD || 'password',
         database: process.env.POSTGRES_DB || 'pontoapp',
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         logging: true,
         entities: [
           process.env.NODE_ENV === 'production'
