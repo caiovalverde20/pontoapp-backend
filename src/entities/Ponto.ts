@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { User } from './User';
 
 @Entity()
 export class Ponto {
@@ -12,6 +12,6 @@ export class Ponto {
   @Column({ nullable: true })
   endTime?: Date;
 
-  @ManyToOne(() => User, (user) => user.pontos, { onDelete: "CASCADE" })
+  @ManyToOne(() => User, (user) => user.pontos, { onDelete: 'CASCADE' })
   user!: User;
 }

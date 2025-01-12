@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   postgres:
@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: pontoapp
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   backend:
     build:
@@ -19,7 +19,7 @@ services:
     container_name: pontoapp-backend
     restart: always
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - postgres
     environment:
