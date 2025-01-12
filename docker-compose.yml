@@ -23,6 +23,7 @@ services:
     depends_on:
       - postgres
     environment:
+      NODE_ENV: production
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_USER: user
