@@ -39,7 +39,7 @@ O backend está disponível no seguinte link:
 A documentação completa de todas as rotas da API pode ser acessada no Postman:
 [Documentação no Postman](https://documenter.getpostman.com/view/18629221/2sAYQWKDnG)
 
-## **Deploy e documentação** 
+## **Codigo de usuario** 
 
 invés do codigo de usuario agora é um username gerado automaticamente baseado no nome do usuario, sendo muito mais pratico de lembrar.
 
