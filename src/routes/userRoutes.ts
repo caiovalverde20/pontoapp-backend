@@ -65,6 +65,11 @@ userRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 
+    if (!id || isNaN(Number(id))) {
+      res.status(404).json({ error: 'Usuário não encontrado' });
+      return;
+    }
+
     const user = await AppDataSource.getRepository(User).findOne({
       where: { id: Number(id) },
     });
@@ -81,27 +86,29 @@ userRouter.get('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-userRouter.get(
-  '/username/:username',
-  async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { username } = req.params;
+userRouter.get('/username/:username', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { username } = req.params;
 
-      const user = await AppDataSource.getRepository(User).findOne({
-        where: { username },
-      });
-
-      if (!user) {
-        res.status(404).json({ error: 'Usuário não encontrado' });
-        return;
-      }
-
-      res.status(200).json(user);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Erro ao buscar o usuário' });
+    if (!username) {
+      res.status(404).json({ error: 'Usuário não encontrado' });
+      return;
     }
+
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { username },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'Usuário não encontrado' });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao buscar o usuário' });
   }
-);
+});
 
 export default userRouter;

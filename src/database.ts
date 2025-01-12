@@ -3,14 +3,12 @@ import { DataSource } from 'typeorm';
 import { User } from './entities/User';
 import { Ponto } from './entities/Ponto';
 
-// Define o ambiente de teste
 const isTestEnv = process.env.NODE_ENV === 'test';
 
-// Criação do DataSource com suporte para tentativas de conexão
 export const AppDataSource = new DataSource(
   isTestEnv
     ? {
-        type: 'sqlite', // Banco de dados em memória para testes
+        type: 'sqlite',
         database: ':memory:',
         synchronize: true,
         dropSchema: true,
@@ -18,7 +16,7 @@ export const AppDataSource = new DataSource(
         logging: false,
       }
     : {
-        type: 'postgres', // Banco PostgreSQL
+        type: 'postgres',
         host: process.env.POSTGRES_HOST || 'localhost',
         port: Number(process.env.POSTGRES_PORT) || 5432,
         username: process.env.POSTGRES_USER || 'postgres',
@@ -28,13 +26,12 @@ export const AppDataSource = new DataSource(
         logging: true,
         entities: [
           process.env.NODE_ENV === 'production'
-            ? 'dist/entities/*.js' // Build em produção
-            : 'src/entities/*.ts', // Desenvolvimento local
+            ? 'dist/entities/*.js'
+            : 'src/entities/*.ts',
         ],
       }
 );
 
-// Função para inicializar o banco com tentativas de reconexão
 export const initializeDatabase = async (retries = 5, delay = 3000): Promise<void> => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -52,7 +49,6 @@ export const initializeDatabase = async (retries = 5, delay = 3000): Promise<voi
 };
 
 
-// Inicializa o banco apenas fora dos testes
 if (!isTestEnv) {
   AppDataSource.initialize()
     .then(() => {
